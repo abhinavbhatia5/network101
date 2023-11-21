@@ -1,0 +1,75 @@
+Switch(config)#int vlan 10
+Switch(config-if)#name LAN10
+                   ^
+% Invalid input detected at '^' marker.
+	
+Switch(config-if)#vlan 10
+Switch(config-vlan)#
+%LINK-5-CHANGED: Interface Vlan10, changed state to up
+name LAN10
+Switch(config-vlan)#vlan 20
+Switch(config-vlan)#name LAN20
+Switch(config-vlan)#exit
+Switch(config)#int vlan 10
+Switch(config-if)#description Default Gateway SVI for 192.168.10.0/24
+Switch(config-if)#ip add 192.168.10.1 255.255.255.0
+Switch(config-if)#no shut 
+Switch(config-if)#exit
+Switch(config)#int vlan 20
+Switch(config-if)#
+%LINK-5-CHANGED: Interface Vlan20, changed state to up
+description Default Gateway SVI for 192.168.20.0/24
+Switch(config-if)#ip add 192.168.20.1 255.255.255.0
+Switch(config-if)#no shut
+Switch(config-if)#exit
+Switch(config)#int Gig1/0/6
+Switch(config-if)#int Gig1/0/8
+Switch(config-if)#description Access port to PC1
+Switch(config-if)#switchport mode access
+Switch(config-if)#switchport access vlan 10
+Switch(config-if)#
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan10, changed state to up
+exit
+Switch(config)#int Gig1/0/18
+Switch(config-if)#description Access port to PC2
+Switch(config-if)#switchport mode access
+Switch(config-if)#switchport access vlan 20
+Switch(config-if)#
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan20, changed state to up
+exit
+Switch(config)#ip routing
+Switch(config)#int Gig1/0/1
+Switch(config-if)#description routed Port Link to R1
+Switch(config-if)#no switchport
+Switch(config-if)#ip address 10.10.10.2 255.255.255.0
+Switch(config-if)#no shut
+Switch(config-if)#exit
+Switch(config)#ip routing
+Switch(config)#router ospf 10
+Switch(config-router)#network 192.168.10.0 0.0.0.255 network 0
+                                                     ^
+% Invalid input detected at '^' marker.
+	
+Switch(config-router)#network 192.168.10.0 0.0.0.255 area 0
+Switch(config-router)#network 192.168.20.0 0.0.0.255 area 0
+Switch(config-router)#network 10.10.10.0 0.0.0.3 area 0
+Switch(config-router)#^Z
+Switch#
+%SYS-5-CONFIG_I: Configured from console by console
+
+%LINK-5-CHANGED: Interface GigabitEthernet1/0/1, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet1/0/1, changed state to up
+
+00:15:15: %OSPF-5-ADJCHG: Process 10, Nbr 10.20.20.1 on GigabitEthernet1/0/1 from LOADING to FULL, Loading Done
+
+Switch#show ip route | begin Gateway
+Gateway of last resort is not set
+
+     10.0.0.0/24 is subnetted, 2 subnets
+C       10.10.10.0 is directly connected, GigabitEthernet1/0/1
+O       10.20.20.0 [110/2] via 10.10.10.1, 00:01:55, GigabitEthernet1/0/1
+C    192.168.10.0/24 is directly connected, Vlan10
+C    192.168.20.0/24 is directly connected, Vlan20
+
+Switch#
